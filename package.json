@@ -1,0 +1,36 @@
+{
+  "name": "se-challenge-payroll",
+  "version": "0.0.1",
+  "description": "Wave Payroll Challenge API.",
+  "main": "index.js",
+  "repository": "git@github.com:makerzenen/se-challenge-payroll-node.git",
+  "author": "Dustan Curtis <69445583+makerzenen@users.noreply.github.com>",
+  "license": "unlicensed",
+  "private": true,
+  "engines": {
+    "node": ">=14"
+  },
+  "scripts": {
+    "start:dev": "node index.js | pino-pretty",
+    "start": "node index.js",
+    "lint": "eslint --cache",
+    "format": "prettier --write . | yarn eslint --fix"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
+    "errorhandler": "^1.5.1",
+    "express": "^4.17.1",
+    "express-pino-logger": "^5.0.0",
+    "express-session": "^1.17.1",
+    "method-override": "^3.0.0",
+    "methods": "^1.1.2",
+    "pino": "^6.5.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.7.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "prettier": "^2.0.5"
+  }
+}
