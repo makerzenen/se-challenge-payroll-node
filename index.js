@@ -1,7 +1,7 @@
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
-
+// Module imports.
 const http = require("http"),
   path = require("path"),
   methods = require("methods"),
@@ -10,7 +10,11 @@ const http = require("http"),
   session = require("express-session"),
   errorhandler = require("errorhandler"),
   pino = require("pino"),
-  expressPino = require("express-pino-logger");
+  expressPino = require("express-pino-logger"),
+  fileUpload = require("express-fileupload");
+
+// Local imports.
+const routes = require("./routes.js");
 
 const logger = pino({ level: process.env.LOG_LEVEL || "info" });
 const expressLogger = expressPino({ logger });
@@ -30,6 +34,8 @@ app.use(
     saveUninitialized: false,
   }),
 );
+app.use(fileUpload());
+app.use("/", routes);
 
 // Error handling.
 if (!isProduction) {
@@ -69,6 +75,9 @@ app.use(function (err, req, res, next) {
 
 // Connect to database.
 require("./knexfile");
+
+// Add API routes.
+
 
 // Start server.
 const server = app.listen(process.env.PORT, () => {
