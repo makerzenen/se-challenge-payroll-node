@@ -10,13 +10,11 @@ const http = require("http"),
   session = require("express-session"),
   errorhandler = require("errorhandler"),
   pino = require("pino"),
-  expressPino = require("express-pino-logger"),
-  fileUpload = require("express-fileupload");
+  expressPino = require("express-pino-logger");
 
 // Local imports.
 const routes = require("./routes.js"),
   logger = require("./logger.js");
-
 
 const expressLogger = expressPino({ logger });
 
@@ -35,7 +33,6 @@ app.use(
     saveUninitialized: false,
   }),
 );
-app.use(fileUpload());
 app.use("/", routes);
 
 // Error handling.
