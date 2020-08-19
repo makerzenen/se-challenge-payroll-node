@@ -14,9 +14,10 @@ const http = require("http"),
   fileUpload = require("express-fileupload");
 
 // Local imports.
-const routes = require("./routes.js");
+const routes = require("./routes.js"),
+  logger = require("./logger.js");
 
-const logger = pino({ level: process.env.LOG_LEVEL || "info" });
+
 const expressLogger = expressPino({ logger });
 
 const isProduction = process.env.NODE_ENV === "production";
@@ -75,9 +76,6 @@ app.use(function (err, req, res, next) {
 
 // Connect to database.
 require("./knexfile");
-
-// Add API routes.
-
 
 // Start server.
 const server = app.listen(process.env.PORT, () => {
