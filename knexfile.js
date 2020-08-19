@@ -10,6 +10,9 @@ const knex = require("knex")({
     password: process.env.DATABASE_PASSWORD,
     database: process.env.DATABASE_NAME,
   },
+  migrations: {
+    tableName: "knex_migrations",
+  },
 });
 
 module.exports = knex;
