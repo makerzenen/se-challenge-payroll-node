@@ -14,7 +14,13 @@
     "start:dev": "node index.js | pino-pretty",
     "start": "node index.js",
     "lint": "eslint --cache",
-    "format": "prettier --write . | yarn eslint --fix"
+    "format": "prettier --write . | yarn eslint --fix",
+    "db:version": "knex migrate:currentVersion",
+    "db:change": "knex migrate:make",
+    "db:migrate": "knex migrate:latest",
+    "db:rollback": "knex migrate:rollback",
+    "db:seed": "knex seed:run",
+    "db:reset": "database/scripts/reset.js"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
