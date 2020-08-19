@@ -1,13 +1,16 @@
 const express = require("express");
+const logger = require("./logger.js");
 
 const router = express.Router();
 
 router.get("/", (req, res) => {
-	res.send("se-challenge-payroll homepage")
+	logger.info("/homepage");
+	res.json({ message: "se-challenge-payroll homepage" } )
 });
 
 router.get("/ping", (req, res) => {
-	res.send("se-challenge-payroll ping")
+	logger.info("/ping");
+	res.json({ message: "se-challenge-payroll ping" } )
 });
 
 module.exports = router;

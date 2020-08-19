@@ -10,13 +10,12 @@ const http = require("http"),
   session = require("express-session"),
   errorhandler = require("errorhandler"),
   pino = require("pino"),
-  expressPino = require("express-pino-logger"),
-  fileUpload = require("express-fileupload");
+  expressPino = require("express-pino-logger");
 
 // Local imports.
-const routes = require("./routes.js");
+const routes = require("./routes.js"),
+  logger = require("./logger.js");
 
-const logger = pino({ level: process.env.LOG_LEVEL || "info" });
 const expressLogger = expressPino({ logger });
 
 const isProduction = process.env.NODE_ENV === "production";
@@ -34,7 +33,6 @@ app.use(
     saveUninitialized: false,
   }),
 );
-app.use(fileUpload());
 app.use("/", routes);
 
 // Error handling.
@@ -75,9 +73,6 @@ app.use(function (err, req, res, next) {
 
 // Connect to database.
 require("./knexfile");
-
-// Add API routes.
-
 
 // Start server.
 const server = app.listen(process.env.PORT, () => {
