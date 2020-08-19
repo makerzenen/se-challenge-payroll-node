@@ -1,0 +1,34 @@
+version: "3.4"
+
+services:
+  se-challenge-payroll-dev:
+    image: "makerzenen/se-challenge-payroll-dev:latest"
+    expose:
+      - "8080"
+    depends_on:
+      - "database"
+    env_file:
+      - ".env"
+
+  se-challenge-payroll-release:
+    image: "makerzenen/se-challenge-payroll-release:latest"
+    expose:
+      - "3000"
+    depends_on:
+      - "database"
+    env_file:
+      - ".env"
+    environment:
+      PORT: "3000"
+
+  database:
+    image: "postgres:12"
+    environment:
+      - POSTGRES_USER=wave_payroll
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=wave_payroll
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
