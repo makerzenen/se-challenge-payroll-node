@@ -67,6 +67,9 @@ app.use(function (err, req, res, next) {
   });
 });
 
+// Connect to database.
+require("./knexfile");
+
 // Start server.
 const server = app.listen(process.env.PORT, () => {
   logger.info(`Server is listening on port ${server.address().port}`);
