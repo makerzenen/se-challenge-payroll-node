@@ -5,6 +5,7 @@ const logger = require("./logger.js");
 
 const router = express.Router();
 
+// For CSV validation.
 const csvConfig = {
   headers: [
     {
@@ -40,20 +41,17 @@ const csvConfig = {
 }
 
 router.get("/", (req, res) => {
-  logger.info("/homepage");
   res.json({ message: "se-challenge-payroll homepage" });
 });
 
 router.get("/ping", (req, res) => {
-  logger.info("/ping");
   res.json({ message: "se-challenge-payroll ping" });
 });
 
 router.post("/payroll-upload", (req, res) => {
-  logger.info("/payroll-upload");
   // Parse form for file upload.
   const form = new multiparty.Form();
-  form.parse(req, (err, fields, files) {
+  form.parse(req, function (err, fields, files) {
     // 0. Validate CSV.
     // 1. Parse and insert time report id.
     // 2. Insert missing employees.

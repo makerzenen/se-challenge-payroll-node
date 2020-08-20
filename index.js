@@ -9,18 +9,18 @@ const http = require("http"),
   bodyParser = require("body-parser"),
   session = require("express-session"),
   errorhandler = require("errorhandler"),
-  pino = require("pino"),
-  expressPino = require("express-pino-logger");
+  pino = require("express-pino-logger");
 
 // Local imports.
 const routes = require("./routes.js"),
   logger = require("./logger.js");
 
-const expressLogger = expressPino({ logger });
+const expressLogger = pino({ logger });
 
 const isProduction = process.env.NODE_ENV === "production";
 
 const app = express();
+app.use(expressLogger);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(require("method-override")());
