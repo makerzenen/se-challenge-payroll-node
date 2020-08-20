@@ -3,6 +3,7 @@ exports.up = function (knex, Promise) {
     knex.schema.createTable("time_reports", function (table) {
       table.increments("id");
       table.number("public_id").unique().notNullable();
+      table.string("status").notNullable();
       table.timestamp("created_at").defaultTo(knex.fn.now());
       table.timestamp("updated_at").defaultTo(knex.fn.now());
     }),
@@ -16,6 +17,13 @@ exports.up = function (knex, Promise) {
       table.increments("id");
       table.string("public_id").unique().notNullable();
       table.number("hourly_pay").notNullable();
+      table.timestamp("created_at").defaultTo(knex.fn.now());
+      table.timestamp("updated_at").defaultTo(knex.fn.now());
+    }),
+    knex.schema.createTable("pay_periods", function (table) {
+      table.increments("id");
+      table.date("start_date").notNullable();
+      table.date("end_date").notNullable();
       table.timestamp("created_at").defaultTo(knex.fn.now());
       table.timestamp("updated_at").defaultTo(knex.fn.now());
     }),
@@ -37,6 +45,7 @@ exports.up = function (knex, Promise) {
         .references("id")
         .inTable("job_group");
       table.number("hours_worked").notNullable();
+      table.number("pay_amount").notNullable();
       table.date("work_date").notNullable();
       table.timestamp("created_at").defaultTo(knex.fn.now());
       table.timestamp("updated_at").defaultTo(knex.fn.now());
