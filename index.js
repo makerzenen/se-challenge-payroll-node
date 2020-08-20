@@ -13,7 +13,8 @@ const http = require("http"),
 
 // Local imports.
 const routes = require("./routes.js"),
-  logger = require("./logger.js");
+  logger = require("./logger.js"),
+  knex = require("./knexfile.js");
 
 const expressLogger = pino({ logger });
 
@@ -70,9 +71,6 @@ app.use(function (err, req, res, next) {
     },
   });
 });
-
-// Connect to database.
-require("./knexfile");
 
 // Start server.
 const server = app.listen(process.env.PORT, () => {
