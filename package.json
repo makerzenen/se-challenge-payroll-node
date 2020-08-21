@@ -15,6 +15,7 @@
     "start": "node index.js",
     "lint": "eslint --cache",
     "format": "prettier --write . | yarn eslint --fix",
+    "test": "mocha test",
     "db:version": "knex migrate:currentVersion",
     "db:change": "knex migrate:make",
     "db:migrate": "knex migrate:latest",
