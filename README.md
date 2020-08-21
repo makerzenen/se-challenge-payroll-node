@@ -1,6 +1,6 @@
 # Wave Payroll Challenge - Nodejs
 
-API server in Nodejs for the Wave Payroll Challenge [link](https://github.com/wvchallenges/se-challenge-payroll).
+API server in Nodejs for the Wave Payroll Challenge ([link](https://github.com/wvchallenges/se-challenge-payroll)).
 
 ## Endpoints
 
