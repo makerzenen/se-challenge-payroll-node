@@ -4,6 +4,9 @@ const config = require("../../knexfile.js"),
   logger = require("../../logger.js");
 
 async function reset() {
+  if (process.env.NODE_ENV !== "production") {
+    require("dotenv").config();
+  }
   const db = knex({
     ...config,
     connection: { ...config.connection, database: "postgres" },
