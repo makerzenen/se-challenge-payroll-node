@@ -13,7 +13,7 @@ function parsePayrollId(filename) {
   const matches = filename.match(/\d+/);
   if (matches) {
     const id = matches[0];
-    logger.info(`Parsed payroll of ID: ${id}.`);
+    logger.info(`Parsed payroll filename with ID: ${id}.`);
     return id;
   } else {
     logger.error(`Unable to parse payroll ID from: ${filename}.`);
@@ -21,12 +21,31 @@ function parsePayrollId(filename) {
   }
 }
 
+function parsePayrollCsv(filename, fileId, headers) {
+  const results = [];
+  return new Promise((resolve, reject) => {
+    fs.createReadStream(filename)
+    .pipe(csv({ strict: true }, headers))
+    .on("data", (data) => results.push(data))
+    .on("data", (data) => logger.debug(data))
+    .on("error", (error) => reject(err))
+    .on("end", () => {
+      logger.info(
+        `Payroll ID ${fileId} successfully processed ${
+          Object.keys(results).length
+        } entries.`,
+      );
+      resolve(results);
+    });
+  })
+}
+
 router.get("/", (req, res) => {
-  res.json({ message: "se-challenge-payroll /" });
+  res.json({ message: "welcome" });
 });
 
 router.get("/ping", (req, res) => {
-  res.json({ message: "se-challenge-payroll /ping" });
+  res.json({ message: "ping" });
 });
 
 router.get("/payroll-report", (req, res) => {
@@ -50,30 +69,11 @@ router.post("/payroll-upload", (req, res) => {
       res.status(400).send({ message: `Invalid filename: ${filename}.` });
       return;
     }
-    // Parse CSV rows into array.
-    const results = [];
-    const failedResults = [];
-    fs.createReadStream(filepath)
-      .pipe(csv({ strict: true }, headers))
-      .on("data", (data) => results.push(data))
-      .on("data", (data) => logger.debug(data))
-      .on("error", (error) => failedResults.push(error))
-      .on("error", (error) => logger.debug(error))
-      .on("end", () => {
-        logger.info(
-          `Payroll ID ${fileId} successfully processed ${
-            Object.keys(results).length
-          } entries.`,
-        );
-        if (failedResults > 0) {
-          logger.error(
-            `Payroll ID ${fileId} failed to process ${
-              Object.keys(failedResults).length
-            } entries.`,
-          );
-        }
-      });
-    res.json({ message: "File uploaded and processed successfully." });
+    // Parse CSV rows.
+    const results = parsePayrollCsv(filepath, fileId, headers);
+    results.then((result) => { 
+      res.json({ message: "File uploaded and processed successfully." });
+    });
   });
 });
 
