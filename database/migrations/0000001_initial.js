@@ -1,51 +1,35 @@
-exports.up = function (knex, Promise) {
+exports.up = function (knex) {
   return Promise.all([
     knex.schema.createTable("time_reports", function (table) {
       table.increments("id");
-      table.number("public_id").unique().notNullable();
+      table.integer("public_id").unique().notNullable();
       table.string("status").notNullable();
       table.timestamp("created_at").defaultTo(knex.fn.now());
       table.timestamp("updated_at").defaultTo(knex.fn.now());
     }),
     knex.schema.createTable("employees", function (table) {
       table.increments("id");
-      table.number("public_id").unique().notNullable();
+      table.integer("public_id").unique().notNullable();
       table.timestamp("created_at").defaultTo(knex.fn.now());
       table.timestamp("updated_at").defaultTo(knex.fn.now());
     }),
     knex.schema.createTable("job_groups", function (table) {
       table.increments("id");
       table.string("public_id").unique().notNullable();
-      table.number("hourly_pay").notNullable();
-      table.timestamp("created_at").defaultTo(knex.fn.now());
-      table.timestamp("updated_at").defaultTo(knex.fn.now());
-    }),
-    knex.schema.createTable("pay_periods", function (table) {
-      table.increments("id");
-      table.date("start_date").notNullable();
-      table.date("end_date").notNullable();
+      table.decimal("hourly_pay", 8).notNullable();
       table.timestamp("created_at").defaultTo(knex.fn.now());
       table.timestamp("updated_at").defaultTo(knex.fn.now());
     }),
     knex.schema.createTable("payroll", function (table) {
       table.increments("id");
       table
-        .specificType("employee_id", "employee_id")
-        .notNullable()
-        .references("id")
-        .inTable("employees");
+        .integer("employee_id").references("id").inTable("employees").notNull();
       table
-        .specificType("time_report_id", "time_report_id")
-        .notNullable()
-        .references("id")
-        .inTable("time_reports");
+        .integer("time_report_id").references("id").inTable("time_reports").notNull();
       table
-        .specificType("job_group_id", "job_group_id")
-        .notNullable()
-        .references("id")
-        .inTable("job_group");
-      table.number("hours_worked").notNullable();
-      table.number("pay_amount").notNullable();
+        .integer("job_group_id").references("id").inTable("job_groups").notNull();
+      table.decimal("hours_worked", 8).notNullable();
+      table.decimal("pay_amount", 8).notNullable();
       table.date("work_date").notNullable();
       table.timestamp("created_at").defaultTo(knex.fn.now());
       table.timestamp("updated_at").defaultTo(knex.fn.now());

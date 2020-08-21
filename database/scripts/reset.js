@@ -1,17 +1,8 @@
-const knex = require("knex"),
-  spawn = require("cross-spawn");
-const config = require("../../knexfile.js"),
-  logger = require("../../logger.js");
+const knex = require("knex");
+const logger = require("../../logger.js"),
+  knex = require("../../knexfile.js");
 
-async function reset() {
-  if (process.env.NODE_ENV !== "production") {
-    require("dotenv").config();
-  }
-  const db = knex({
-    ...config,
-    connection: { ...config.connection, database: "postgres" },
-  });
-
+async function reset(db) {
   // Drop existing connections to database.
   await db.raw(
     ` SELECT pg_terminate_backend(pg_stat_activity.pid)
@@ -25,12 +16,21 @@ async function reset() {
   await db.raw(`CREATE DATABASE ??`, [process.env.DATABASE_NAME]);
   await db.destroy();
 
-  // Migrate database to the latest version
-  spawn.sync("yarn", ["knex", "migrate:latest"], { stdio: "inherit" });
-  spawn.sync("yarn", ["knex", "seed:run"], { stdio: "inherit" });
+  // Migrate database to the latest version and run seeds.
+  db.migrate.latest()
+    .then(() => {
+      return knex.seed.run();
+    });
 }
 
-reset().catch((err) => {
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+
+knex.database = "postgres";
+db = require("knex")(knex);
+
+reset(db).catch((err) => {
   logger.error(err);
   process.exit(1);
 });

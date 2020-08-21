@@ -2,7 +2,8 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
-const knex = require("knex")({
+config = {
+  debug: process.env.NODE_ENV === "development" || false,
   client: "postgres",
   connection: {
     host: process.env.DATABASE_HOST,
@@ -13,6 +14,8 @@ const knex = require("knex")({
   migrations: {
     tableName: "knex_migrations",
   },
-});
+  migrations: { directory: "database/migrations" },
+  seeds: { directory: "database/seeds" },
+};
 
-module.exports = knex;
+module.exports = config;
