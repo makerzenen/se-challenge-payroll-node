@@ -14,7 +14,8 @@ const http = require("http"),
 // Local imports.
 const routes = require("./routes.js"),
   logger = require("./logger.js"),
-  knex = require("./knexfile.js");
+  knex = require("./knexfile.js"),
+  db = require("knex")(knex);
 
 const expressLogger = pino({ logger });
 
