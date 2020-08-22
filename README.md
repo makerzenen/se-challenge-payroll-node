@@ -38,7 +38,7 @@ Since Node14 supports the latest Javascript features, Babel is not required, thu
 
 1. `yarn db:reset`
 2. `yarn start:dev`
-3. `curl --location --request POST 'localhost:8080/payroll-upload' --form 'file=@./test/data/time-report-42.csv'`
+3. `curl --location --request POST 'localhost:8080/time-report-upload' --form 'file=@./test/data/time-report-42.csv'`
 
 ## Run Tests Locally with docker-compose
 
