@@ -48,7 +48,7 @@ describe("GET /payroll-report", () => {
   });
 });
 
-describe("POST /payroll-upload @file", () => {
+describe("POST /time-report-upload @file", () => {
   const filename = "time-report-42.csv";
   it("should respond with a successful payroll file upload", () => {
     request(app)
