@@ -1,5 +1,6 @@
 FROM node:14-alpine AS dev
 RUN apk update --no-cache && \
+  apk upgrade --no-cache && \
   apk add iputils curl --no-cache
 WORKDIR /app
 COPY package.json yarn.lock /app/
