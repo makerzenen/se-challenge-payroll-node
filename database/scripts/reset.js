@@ -1,7 +1,5 @@
-const knex = require("knex");
 const logger = require("../../logger.js"),
-  knex = require("./knexfile.js"),
-  db = require("knex")(knex);
+  knex = require("../../knexfile.js");
 
 async function reset(db) {
   // Drop existing connections to database.
