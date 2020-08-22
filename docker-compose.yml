@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   se-challenge-payroll-dev:
-    image: "makerzenen/se-challenge-payroll-dev:latest"
+    image: "highsupply/se-challenge-payroll-dev:latest"
     expose:
       - "8080"
     depends_on:
@@ -11,7 +11,7 @@ services:
       - ".env"
 
   se-challenge-payroll-release:
-    image: "makerzenen/se-challenge-payroll-release:latest"
+    image: "highsupply/se-challenge-payroll-release:latest"
     expose:
       - "3000"
     depends_on:
@@ -19,6 +19,8 @@ services:
     env_file:
       - ".env"
     environment:
+      LOG_LEVEL: "info"
+      NODE_ENV: "production"
       PORT: "3000"
 
   database:
