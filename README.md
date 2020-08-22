@@ -42,11 +42,16 @@ Since Node14 supports the latest Javascript features, Babel is not required, thu
 
 ## Run Tests Locally with docker-compose
 
+Runs dev, release and Postgres database, builds database, runs migrations and seeds, runs tests, pings and curls release container.
+
 ```bash
-docker-compose up -d se-challenge-payroll-dev se-challenge-payroll-release database && \
+docker-compose up -d se-challenge-payroll-dev database && \
     docker-compose exec se-challenge-payroll-dev yarn db:reset && \
+    docker-compose stop se-challenge-payroll-dev && \
+    docker-compose up -d se-challenge-payroll-dev se-challenge-payroll-release && \
     docker-compose exec se-challenge-payroll-dev yarn test && \
-    docker-compose exec se-challenge-payroll-dev ping se-challenge-payroll-release
+    docker-compose exec se-challenge-payroll-dev ping -c 1 se-challenge-payroll-release && \
+    docker-compose exec se-challenge-payroll-dev curl se-challenge-payroll-release:3000/ping
 ```
 
 ## Changes for Production

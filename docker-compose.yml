@@ -3,17 +3,19 @@ version: "3.4"
 services:
   se-challenge-payroll-dev:
     image: "highsupply/se-challenge-payroll-dev:latest"
-    expose:
-      - "8080"
+    ports:
+      - "8080:8080"
     depends_on:
       - "database"
     env_file:
       - ".env"
+    environment:
+      DATABASE_HOST: "database"
 
   se-challenge-payroll-release:
     image: "highsupply/se-challenge-payroll-release:latest"
-    expose:
-      - "3000"
+    ports:
+      - "3000:3000"
     depends_on:
       - "database"
     env_file:
@@ -25,6 +27,8 @@ services:
 
   database:
     image: "postgres:12"
+    ports:
+      - "5432:5432"
     environment:
       - POSTGRES_USER=wave_payroll
       - POSTGRES_PASSWORD=password
