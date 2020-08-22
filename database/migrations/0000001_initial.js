@@ -23,14 +23,25 @@ exports.up = function (knex) {
     knex.schema.createTable("payroll", function (table) {
       table.increments("id");
       table
-        .integer("employee_id").references("id").inTable("employees").notNull();
+        .integer("employee_id")
+        .references("id")
+        .inTable("employees")
+        .notNull();
       table
-        .integer("time_report_id").references("id").inTable("time_reports").notNull();
+        .integer("time_report_id")
+        .references("id")
+        .inTable("time_reports")
+        .notNull();
       table
-        .integer("job_group_id").references("id").inTable("job_groups").notNull();
+        .integer("job_group_id")
+        .references("id")
+        .inTable("job_groups")
+        .notNull();
       table.decimal("hours_worked", 8).notNullable();
       table.decimal("pay_amount", 8).notNullable();
       table.date("work_date").notNullable();
+      table.date("pay_period_start_date").notNullable();
+      table.date("pay_period_end_date").notNullable();
       table.timestamp("created_at").defaultTo(knex.fn.now());
       table.timestamp("updated_at").defaultTo(knex.fn.now());
     }),
