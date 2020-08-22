@@ -17,7 +17,7 @@ describe("GET /", () => {
     request(app)
       .get("/")
       .expect("Content-Type", /json/)
-      .expect(200, { "message": "welcome" })
+      .expect(200, { message: "welcome" })
       .end((err, res) => {
         if (err) throw err;
       });
