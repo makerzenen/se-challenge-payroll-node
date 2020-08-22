@@ -17,13 +17,13 @@ Since Node14 supports the latest Javascript features, Babel is not required, thu
 
 `yarn install`
 
-### Dev Version (Docker) - Includes Tests and Database Migrations
+### Dev Version (Docker) - Includes Tests, Database Migrations and Dev Dependencies
 
-`docker build . -t makerzenen/se-challenge-payroll-dev:latest --target=dev`
+`docker build . -t highsupply/se-challenge-payroll-dev:latest --target=dev`
 
 ### Production Version (Docker) - Only What's Needed for Production
 
-`docker build . -t makerzenen/se-challenge-payroll-release:latest --target=release`
+`docker build . -t highsupply/se-challenge-payroll-release:latest --target=release`
 
 ## Run Server Locally
 

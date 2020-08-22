@@ -1,6 +1,7 @@
 const knex = require("knex");
 const logger = require("../../logger.js"),
-  knex = require("../../knexfile.js");
+  knex = require("./knexfile.js"),
+  db = require("knex")(knex);
 
 async function reset(db) {
   // Drop existing connections to database.
@@ -17,10 +18,9 @@ async function reset(db) {
   await db.destroy();
 
   // Migrate database to the latest version and run seeds.
-  db.migrate.latest()
-    .then(() => {
-      return knex.seed.run();
-    });
+  db.migrate.latest().then(() => {
+    return knex.seed.run();
+  });
 }
 
 if (process.env.NODE_ENV !== "production") {
