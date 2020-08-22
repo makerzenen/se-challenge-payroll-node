@@ -7,7 +7,7 @@ API server in Nodejs for the Wave Payroll Challenge ([link](https://github.com/w
 1. GET / - homepage
 2. GET /ping - for pinging (healthchecks)
 3. GET /payroll-report - returns the payroll report containing payment information for all employees, all time
-4. POST /payroll-upload - upload a payroll file using form data for processing
+4. POST /time-report-upload - upload a time report file using form data for processing
 
 ## Build
 
@@ -34,6 +34,12 @@ Since Node14 supports the latest Javascript features, Babel is not required, thu
 1. `yarn db:reset`
 2. `yarn test`
 
+## Test File Upload Using Test File
+
+1. `yarn db:reset`
+2. `yarn start:dev`
+3. `curl --location --request POST 'localhost:8080/payroll-upload' --form 'file=@./test/data/time-report-42.csv'`
+
 ## Run Tests Locally with docker-compose
 
 ```bash
@@ -51,4 +57,5 @@ Given that this is a test project, I would make the following improvements for a
 2. Better test coverage that looks at failure cases in more detail.
 3. Use models to simplify database interactions.
 4. Refactor `routes.js` to isolate some of the parsing logic for testability.
-5. Add some form of endpoint authentication.
+5. Use Flow or Typescript for safety.
+6. Add some form of endpoint authentication.
