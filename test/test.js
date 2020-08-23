@@ -38,6 +38,7 @@ describe("GET /ping", () => {
       });
   });
 });
+/*
 
 describe("GET /payroll-report", () => {
   it("should respond with the payroll report", () => {
@@ -64,6 +65,22 @@ describe("POST /time-report-upload @file", () => {
       });
   });
 });
+*/
+
+describe("queries.zeroPad() adds the correct amount of padding", () => {
+  it("should append the correct amount of padding", () => {
+    const numbers = [
+      { number: 5, places: 2, expected: "05" },
+      { number: 10, places: 2, expected: "10" },
+      { number: 10, places: 3, expected: "010" },
+      { number: 3000, places: 10, expected: "0000003000" },
+    ];
+    numbers.forEach(entry => {
+      let result = queries.zeroPad(entry.number, entry.places);
+      chai.expect(result).to.equal(entry.expected);
+    })
+  });
+});
 
 describe("queries.getPayPeriod() returns correct pay period start and end dates", () => {
   it("should validate pay period start and end dates", () => {
@@ -79,8 +96,6 @@ describe("queries.getPayPeriod() returns correct pay period start and end dates"
       entry.expectedStart = moment(`${startDateParts[2]}-${queries.zeroPad(startDateParts[1], 2)}-${queries.zeroPad(startDateParts[0], 2)}`);
       let endDateParts = entry.expectedEnd.split("/");
       entry.expectedEnd = moment(`${endDateParts[2]}-${queries.zeroPad(endDateParts[1], 2)}-${queries.zeroPad(endDateParts[0], 2)}`);
-      console.log(entry.expectedStart);
-      console.log(entry.expectedEnd);
       chai.expect(result.startDate.format("YYYY-MM-DD")).to.equal(entry.expectedStart.format("YYYY-MM-DD"));
       chai.expect(result.endDate.format("YYYY-MM-DD")).to.equal(entry.expectedEnd.format("YYYY-MM-DD"));
     });
