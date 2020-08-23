@@ -21,7 +21,6 @@ function getPayPeriod(workDate) {
     entry.startDate = moment(`${date.year()}-${date.month() + 1}-16`);
     entry.endDate = moment(`${date.year()}-${date.month() + 1}-${date.daysInMonth()}`);
   }
-  console.log(entry);
   return entry;
 }
 
