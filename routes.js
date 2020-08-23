@@ -10,6 +10,7 @@ const router = express.Router();
 async function checkTimeReportId(timeReportId, filename, res) {
   const existingTimeReportIds = await queries.getTimeReportIds();
   if (existingTimeReportIds.includes(timeReportId)) {
+    logger.error(`Invalid time report ID: ${timeReportId} has already been processed.`);
     res.status(400).send({ message: `Duplicate processing error: ${filename} already processed.` });
     return;
   }
