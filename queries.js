@@ -11,15 +11,19 @@ function zeroPad(number, places) {
 // Get pay period start and end dates.
 function getPayPeriod(workDate) {
   const dateParts = workDate.split("/");
-  const date = moment(`${dateParts[2]}-${zeroPad(dateParts[1], 2)}-${zeroPad(dateParts[0], 2)}`);
+  const date = moment(
+    `${dateParts[2]}-${zeroPad(dateParts[1], 2)}-${zeroPad(dateParts[0], 2)}`,
+  );
   let entry = {};
-  if (+date.format('D') <= 15) {
+  if (+date.format("D") <= 15) {
     entry.startDate = moment(`${date.year()}-${date.month() + 1}-01`);
     entry.endDate = moment(`${date.year()}-${date.month() + 1}-15`);
-  } else if (+date.format('D') >= 16) {
+  } else if (+date.format("D") >= 16) {
     // const lastOfMonth = moment(`${date.year()}-${date.month()}-${date.format('D')}`);
     entry.startDate = moment(`${date.year()}-${date.month() + 1}-16`);
-    entry.endDate = moment(`${date.year()}-${date.month() + 1}-${date.daysInMonth()}`);
+    entry.endDate = moment(
+      `${date.year()}-${date.month() + 1}-${date.daysInMonth()}`,
+    );
   }
   return entry;
 }
@@ -29,7 +33,7 @@ async function getEmployees() {
   try {
     const result = await db("employees");
     return result;
-  } catch(error) {
+  } catch (error) {
     logger.error("Failed to get employees.");
     return false;
   }
@@ -40,7 +44,7 @@ async function getJobGroups() {
   try {
     const result = await db("job_groups");
     return result;
-  } catch(error) {
+  } catch (error) {
     logger.error("Failed to get job groups.");
     return false;
   }
@@ -51,7 +55,7 @@ async function getTimeReports() {
   try {
     const result = await db("time_reports");
     return result;
-  } catch(error) {
+  } catch (error) {
     logger.error("Failed to get time reports.");
     return false;
   }
@@ -60,12 +64,17 @@ async function getTimeReports() {
 // Insert time report.
 async function insertTimeReport(timeReportPublicId) {
   try {
-    db("time_reports").insert({
-      public_id: timeReportPublicId,
-      status: "processing",
-    });
-  } catch(error) {
-    logger.error(`Failed to insert time report with ID: ${timeReportPublicId}.`);
+    const results = db("time_reports")
+      .insert({
+        public_id: timeReportPublicId,
+        status: "processing",
+      })
+      .returning("*");
+    return results;
+  } catch (error) {
+    logger.error(
+      `Failed to insert time report with ID: ${timeReportPublicId}.`,
+    );
     return false;
   }
 }
@@ -75,8 +84,10 @@ async function getTimeReportIds(timeReportPublicId) {
   try {
     const result = await db.select("public_id").from("time_reports");
     return result;
-  } catch(error) {
-    logger.error(`Failed to insert time report with ID: ${timeReportPublicId}.`);
+  } catch (error) {
+    logger.error(
+      `Failed to insert time report with ID: ${timeReportPublicId}.`,
+    );
     return false;
   }
 }
@@ -84,43 +95,66 @@ async function getTimeReportIds(timeReportPublicId) {
 // Mark time report as successfully processed.
 async function successTimeReportProcessing(timeReportPublicId) {
   try {
-    db("time_reports").where({ public_id: timeReportPublicId }).update({
-      status: "successful",
-    });
-    logger.info(`Successfully marked time report processing as successful: ${timeReportPublicId}.`);
-  } catch(error) {
-    logger.error(`Failed to mark time report processing as successful: ${timeReportPublicId}.`);
+    const result = await db("time_reports")
+      .where({ public_id: timeReportPublicId })
+      .update({
+        status: "successful",
+      })
+      .returning("*");
+    console.log(result);
+    logger.info(
+      `Successfully marked time report processing as successful: ${timeReportPublicId}.`,
+    );
+    return result;
+  } catch (error) {
+    logger.error(
+      `Failed to mark time report processing as successful: ${timeReportPublicId}.`,
+    );
+    return false;
   }
 }
 
 // Mark time report as failed to process.
 async function failTimeReportProcessing(timeReportPublicId) {
   try {
-    db("time_reports")
-    .where({ public_id: payrollPublicId })
-    .update({
-      status: "failed",
-    });
-    logger.info(`Successfully marked time report processing as failed: ${timeReportPublicId}.`);
-  } catch(error) {
-    logger.error(`Failed to mark time report processing as failed: ${timeReportPublicId}.`);
+    const result = await db("time_reports")
+      .where({ public_id: timeReportPublicId })
+      .update({
+        status: "failed",
+      })
+      .returning("*");
+    logger.info(
+      `Successfully marked time report processing as failed: ${timeReportPublicId}.`,
+    );
+    return result;
+    return true;
+  } catch (error) {
+    logger.error(
+      `Failed to mark time report processing as failed: ${timeReportPublicId}.`,
+    );
+    return false;
   }
 }
 
 // Insert missing employees.
 async function insertMissingEmployees(entries) {
   try {
-    entries.forEach(entry => {
-        db("employees").insert({
-          public_id: entry.employeeId,
+    entries.forEach((entry) => {
+      db("employees")
+        .insert({
+          public_id: entry.publicId,
+        })
+        .then(() => {})
+        .catch((error) => {
+          logger.debug(`Already inserted employee ${entry.publicId}.`);
         });
     });
-    const employees = getEmployees();
-    console.log(`Employees: ${employees}`);
-    const ids = employees.map(employee => employee.public_id);
-    logger.info(`Inserted new employees with IDs: ${ids.join(", ")}.`);
-  } catch(error) {
+    const employees = await getEmployees();
+    logger.info(`Inserted new employees.`);
+    return employees;
+  } catch (error) {
     logger.error(`Failed to insert new employee with ID: ${entry.employeeId}`);
+    return false;
   }
 }
 
@@ -132,51 +166,66 @@ async function insertTimeReportEntries(timeReportPublicId, entries) {
     const jobGroups = await getJobGroups();
     entries.forEach((entry) => {
       // Join time report IDs.
-      entry.jobGroupId = employees.find(({ id }) => publicId === entry.jobGroup);
+      entry.jobGroupId = employees.find(
+        ({ id }) => timeReportPublicId === entry.jobGroup,
+      );
       // Join employee IDs.
-      entry.employeeId = employees.find(({ id }) => publicId === entry.employeedId);
+      entry.employeeId = employees.find(
+        ({ id }) => timeReportPublicId === entry.employeedId,
+      );
       // Join job group IDs.
-      entry.jobGroupId = jobGroups.find(({ id }) => publicId === entry.jobGroup);
-      entry.jobGroupHourlyPay = jobGroups.find(({ hourly_pay }) => publicId === entry.jobGroup);
+      entry.jobGroupId = jobGroups.find(
+        ({ id }) => timeReportPublicId === entry.jobGroup,
+      );
+      entry.jobGroupHourlyPay = jobGroups.find(
+        ({ hourly_pay }) => timeReportPublicId === entry.jobGroup,
+      );
       // Calculate pay periods - correctly handles leap years.
       const date = getPayPeriod(entry.workDate);
-      db("payroll")
-        .insert({
-          employee_id: entry.employeeId,
-          time_report_id: entry.jobGroupId,
-          job_group_id: entry.jobGroupId,
-          hours_worked: entry.hoursWorked,
-          pay_amount: entry.hoursWorked * entry.jobGroupHourlyPay,
-          work_date: entry.workDate,
-          pay_period_start_date: date.startDate,
-          pay_period_end_date: date.endDate,
-        });
+      db("payroll").insert({
+        employee_id: entry.employeeId,
+        time_report_id: entry.jobGroupId,
+        job_group_id: entry.jobGroupId,
+        hours_worked: entry.hoursWorked,
+        pay_amount: entry.hoursWorked * entry.jobGroupHourlyPay,
+        work_date: entry.workDate,
+        pay_period_start_date: date.startDate,
+        pay_period_end_date: date.endDate,
+      });
     });
-    logger.info(`Inserted ${entries.length} time report entries into payroll with time report: ${timeReportPublicId}.`);
+    logger.info(
+      `Inserted ${entries.length} time report entries into payroll with time report: ${timeReportPublicId}.`,
+    );
   } catch (error) {
-    logger.error(`Failed to insert time report entries with ID: ${entry.timeReportPublicId}.`);
+    logger.error(
+      `Failed to insert time report entries with ID: ${entry.timeReportPublicId}.`,
+    );
   }
 }
 
+// Get payroll report for all employees, all time.
 async function getPayrollReport() {
   try {
-    const payrollResults = db
-      .from("payroll")
+    const payrollResults = await db("payroll")
       .select(
         "employees.public_id as employeeId",
-        "payroll.pay_amount as payAmount",
-        "payroll.work_date as workDate",
         "payroll.pay_period_start_date as startDate",
-        "payroll.pay_period_end_date as endDate"
-      ).sum("payroll.pay_amount as amountPaid")
+        "payroll.pay_period_end_date as endDate",
+      )
+      .sum("payroll.pay_amount as amountPaid")
       .leftJoin("employees", "payroll.employee_id", "=", "employees.id")
       .leftJoin("job_groups", "payroll.job_group_id", "=", "job_groups.id")
-      .orderBy("employee_id", "pay_period_start_date", "asc")
-      .groupBy("pay_period_start_date", "employee_id");
+      .orderBy("payroll.employee_id", "payroll.pay_period_start_date", "asc")
+      .groupBy(
+        "employees.public_id",
+        "payroll.employee_id",
+        "payroll.pay_period_start_date",
+        "payroll.pay_period_end_date",
+      );
 
     // Build payroll report response.
     let payrollReport = { employeeReports: [] };
-    payrollResults.forEach(result => {
+    payrollResults.forEach((result) => {
       payrollReport.employeeReports.push({
         employeeId: result.employeeId,
         payPeriod: {
@@ -186,10 +235,12 @@ async function getPayrollReport() {
         amountPaid: "$" + result.amountPaid,
       });
     });
+    console.log(payrollReport);
     return payrollReport;
-  } catch(error) {
-    logger.error("Failed to get employees.");
-    return false;
+  } catch (error) {
+    throw new Error(error);
+    //logger.error("Failed to get employees.");
+    //return false;
   }
 }
 

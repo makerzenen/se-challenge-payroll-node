@@ -35,7 +35,7 @@ app.use(
     saveUninitialized: false,
   }),
 );
-app.use("/", routes);
+app.use("/", routes.router);
 
 // Error handling.
 if (!isProduction) {
