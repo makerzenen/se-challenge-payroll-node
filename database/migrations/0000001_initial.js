@@ -48,7 +48,7 @@ exports.up = function (knex) {
   ]);
 };
 
-exports.down = function (knex, Promise) {
+exports.down = function (knex) {
   return Promise.all([
     knex.schema.dropTable("payroll"),
     knex.schema.dropTable("job_groups"),
