@@ -3,7 +3,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 config = {
-  debug: false,
+  debug: process.env.NODE_ENV === "development" || false,
   client: "postgres",
   connection: {
     host: process.env.DATABASE_HOST,

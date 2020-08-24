@@ -10,8 +10,14 @@ const router = express.Router();
 async function checkTimeReportId(timeReportId, filename, res) {
   const existingTimeReportIds = await queries.getTimeReportIds();
   if (existingTimeReportIds.includes(timeReportId)) {
-    logger.error(`Invalid time report ID: ${timeReportId} has already been processed.`);
-    res.status(400).send({ message: `Duplicate processing error: ${filename} already processed.` });
+    logger.error(
+      `Invalid time report ID: ${timeReportId} has already been processed.`,
+    );
+    res
+      .status(400)
+      .send({
+        message: `Duplicate processing error: ${filename} already processed.`,
+      });
     return;
   }
 }
@@ -34,7 +40,7 @@ function parseTimeReportCsv(timeReportId, filename) {
 
   return new Promise((resolve, reject) => {
     fs.createReadStream(filename)
-      .pipe(csv({ strict: true, skipLines: 1, headers: headers}))
+      .pipe(csv({ strict: true, skipLines: 1, headers: headers }))
       .on("data", (data) => results.push(data))
       .on("data", (data) => logger.debug(data))
       .on("error", (error) => reject(err))
@@ -46,7 +52,7 @@ function parseTimeReportCsv(timeReportId, filename) {
         );
         resolve(results);
       });
-  })
+  });
 }
 
 router.get("/", (req, res) => {
@@ -104,10 +110,17 @@ router.post("/time-report-upload", async (req, res) => {
         // Mark time report as failed.
         queries.failTimeReportProcessing(timeReportId);
         // Failure message.
-        res.status(400).send({ message: `Processing failed: ${filename} is invalid.` });
+        res
+          .status(400)
+          .send({ message: `Processing failed: ${filename} is invalid.` });
       }
     });
   });
 });
 
-module.exports = router;
+module.exports = {
+  router,
+  checkTimeReportId,
+  parseTimeReportId,
+  parseTimeReportCsv,
+};
